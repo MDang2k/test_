@@ -1,15 +1,14 @@
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import Dropout
-from keras.utils import np_utils
-from keras.layers import Flatten
-from keras.layers.convolutional import Conv3D
-from keras.layers.convolutional import MaxPooling3D
-from keras.layers.convolutional import AveragePooling3D
-from tensorflow.keras.layers import BatchNormalization
+from tensorflow.python.keras import layers
+from tensorflow.python.keras.models import Sequential
+from tensorflow.python.keras.layers import Dense
+from tensorflow.python.keras.layers import Dropout
+from tensorflow.python.keras.layers import Flatten
+from tensorflow.python.keras.layers.convolutional import Conv3D
+from tensorflow.python.keras.layers.convolutional import MaxPooling3D
+from tensorflow.python.keras.layers.convolutional import AveragePooling3D
+from tensorflow.python.keras.layers import BatchNormalization
 
 def get_model(width=128, height=128, depth=64):
     """Build a 3D convolutional neural network model."""
@@ -41,4 +40,3 @@ def get_model(width=128, height=128, depth=64):
     # Define the model.
     model = keras.Model(inputs, outputs, name="3dcnn")
     return model
-    model = get_model(width=128, height=128, depth=64)
