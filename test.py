@@ -1,23 +1,20 @@
 import os
 import numpy as np
-from src.dataset import MRIdataset
-from src.model import get_model
+import joblib
 
+def user_predict(checkpoint_path):
+    # Load best weights.
+    model = joblib.load('./model.pkl')
+    model.load_weights(checkpoint_path)
+    prediction = model.predict(np.expand_dims(x_val[0], axis=0))[0]
+    scores = [1 - prediction[0], prediction[0]]
 
-IMAGE_SIZE = 224
-DATA_DIR = './data'
-DATA_DIR_TEST_IMAGES = os.path.join(DATA_DIR, 'test')
-DATA_DIR_TEST_RESULTS = os.path.join(DATA_DIR, 'sample_submission.csv')
-DATA_DIR_TRAIN_LABEL = os.path.join(DATA_DIR, 'train_sample.csv')
+    class_names = ["normal", "abnormal"]
+    for score, name in zip(scores, class_names):
+        print(
+            "This model is %.2f percent confident that CT scan is %s"
+            % ((100 * score), name)
+        )
 
-TRAINED_MODEL_PATH="models/epoch_score"    #place your saved checkpoint file here.
-
-CN_scan_paths = [
-    os.path.join(os.getcwd(), "./data/CN", x)
-    for x in os.listdir("./data/CN")
-]
-
-AD_scan_paths = [
-    os.path.join(os.getcwd(), "./data/AD", x)
-    for x in os.listdir("./data/AD")
-]
+if __name__ == '__main__':
+    user_predict('./3d_image_classification.h5')

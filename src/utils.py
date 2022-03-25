@@ -2,29 +2,8 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
 
-tf.executing_eagerly()
-
-
-train_loader = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-validation_loader = tf.data.Dataset.from_tensor_slices((x_val, y_val))
-
-batch_size = 2
-
-train_dataset = (
-    train_loader.shuffle(len(x_train))
-    .map(train_preprocessing)
-    .batch(batch_size)
-    .prefetch(2)
-)
-
-validation_dataset = (
-    validation_loader.shuffle(len(x_val))
-    .map(validation_preprocessing)
-    .batch(batch_size)
-    .prefetch(2)
-)
-
-
+#Visualize a CT scan image
+import matplotlib.pyplot as plt
 
 data = train_dataset.take(1)
 images, labels = list(data)[0]
@@ -33,7 +12,7 @@ image = images[0]
 print("Dimension of the CT scan is:", image.shape)
 plt.imshow(np.squeeze(image[:, :, 30]), cmap="gray")
 
-
+#Visualize a montage of the slices
 def plot_slices(num_rows, num_columns, width, height, data):
     """Plot a montage of 20 CT slices"""
     data = np.rot90(np.array(data))
@@ -57,6 +36,7 @@ def plot_slices(num_rows, num_columns, width, height, data):
     plt.subplots_adjust(wspace=0, hspace=0, left=0, right=1, bottom=0, top=1)
     plt.show()
 
+#Visualize model performance
 def plot_results(model):
     fig, ax = plt.subplots(1, 2, figsize=(20, 3))
     ax = ax.ravel()

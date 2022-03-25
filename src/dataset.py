@@ -27,23 +27,24 @@ def normalize(volume):
 
 def resize_volume(img):
         """Resize across z-axis"""
-
+        # Set the desired depth
         desired_depth = 64
         desired_width = 128
         desired_height = 128
-
+        # Get current depth
         current_depth = img.shape[-1]
         current_width = img.shape[0]
         current_height = img.shape[1]
-        
+        # Compute depth factor
         depth = current_depth / desired_depth
         width = current_width / desired_width
         height = current_height / desired_height
         depth_factor = 1 / depth
         width_factor = 1 / width
         height_factor = 1 / height
-
+        # Rotate
         img = ndimage.rotate(img, 90, reshape=False)
+        # Resize across z-axis
         img = ndimage.zoom(img, (width_factor, height_factor, depth_factor), order=1)
         return img
 
@@ -55,17 +56,21 @@ def process_scan(path):
         volume = resize_volume(volume)
         return volume
     
-def read_data(path):
+def read_data(dir_path):
 
+        CN_path = os.path.join(dir_path, "CN")
+        AD_path = os.path.join(dir_path, "AD")
+    
         CN_scan_paths = [
-            os.path.join(path, "/CN", x)
-            for x in os.listdir("/CN")
+            os.path.join(CN_path, x)
+            for x in os.listdir(CN_path)
         ]
 
         AD_scan_paths = [
-            os.path.join(os.getcwd(), "/AD", x)
-            for x in os.listdir("/AD")
+            os.path.join(AD_path, x)
+            for x in os.listdir(AD_path)
         ]
+
 
         #scan for all images in data folder
         AD_scans = np.array([process_scan(path) for path in AD_scan_paths])
@@ -79,10 +84,14 @@ def read_data(path):
         CN_labels = np.array([0 for _ in range(len(CN_scans))])
 
         #divide into train an validation set
-        x_train = np.concatenate((AD_scans[:], CN_scans[:]), axis=0)
-        y_train = np.concatenate((AD_labels[:], CN_labels[:]), axis=0)
-        x_val = np.concatenate((AD_scans[:], CN_scans[:]), axis=0)
-        y_val = np.concatenate((AD_labels[:], CN_labels[:]), axis=0)
+        x_train = np.concatenate((AD_scans[:2], CN_scans[:1]), axis=0)
+        y_train = np.concatenate((AD_labels[:2], CN_labels[:1]), axis=0)
+        x_val = np.concatenate((AD_scans[2:], CN_scans[1:]), axis=0)
+        y_val = np.concatenate((AD_labels[2:], CN_labels[1:]), axis=0)
+        print(
+            "Number of samples in train and validation are %d and %d."
+            % (x_train.shape[0], x_val.shape[0])
+        )
 
         return x_train, y_train, x_val, y_val
         
